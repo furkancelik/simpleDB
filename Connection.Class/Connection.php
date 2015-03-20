@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__."/ConnectionInterface.php";
+require __DIR__."/ConnectionInterface.php";
 
 
 /**
@@ -95,7 +95,6 @@ class Connection implements ConnectionInterface
         $this->SQL ="SELECT * FROM ".$table;
         $this->table = $table;
         return $this;
-
     }
 
 
@@ -417,34 +416,9 @@ class Connection implements ConnectionInterface
      */
     public function fetch($fetch_style)
     {
-        switch ($fetch_style)
-        {
-            case "ASSOC":
-                $x = PDO::FETCH_ASSOC;
-                break;
-            case "BOTH":
-                $x = PDO::FETCH_BOTH;
-                break;
-            case "BOUND":
-                $x = PDO::FETCH_BOUND;
-                break;
-            case "INTO":
-                $x = PDO::FETCH_INTO;
-                break;
-            case "LAZY":
-                $x = PDO::FETCH_LAZY;
-                break;
-            case "NUM":
-                $x = PDO::FETCH_NUM;
-                break;
-            case "OBJ":
-                $x = PDO::FETCH_OBJ;
-                break;
-            default:
-                $x = $fetch_style;
-        }
-        $a = $this->result;
-        return $a->fetch($x);
+        $fetch = $this->_fetch($fetch_style);
+        $result = $this->result;
+        return $result->fetch($fetch);
     }
 
 
@@ -454,7 +428,18 @@ class Connection implements ConnectionInterface
      */
     public function fetchAll($fetch_style)
     {
-        switch ($fetch_style)
+		$fetch = $this->_fetch($fetch_style);
+        $result = $this->result;
+        return $result->fetchAll($fetch);
+    }
+	
+	/**
+     * @param $fetch_style
+     * @return integer
+     */
+	public function _fetch(fetch_style)
+	{
+		switch ($fetch_style)
         {
             case "ASSOC":
                 $x = PDO::FETCH_ASSOC;
@@ -480,10 +465,8 @@ class Connection implements ConnectionInterface
             default:
                 $x = $fetch_style;
         }
-
-        $a = $this->result;
-        return $a->fetchAll($x);
-    }
+		return $x;
+	}
 
 
     /**
